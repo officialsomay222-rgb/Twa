@@ -24,18 +24,14 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Accept Android SDK Licenses
+        run: yes | ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --licenses || true
+
       - name: Install Bubblewrap CLI
         run: npm install -g @bubblewrap/cli
 
       - name: Configure Bubblewrap
         run: |
-          # Ensure cmdline-tools/latest exists for Bubblewrap validation
-          if [ ! -d "${ANDROID_HOME}/cmdline-tools/latest" ]; then
-            cd ${ANDROID_HOME}/cmdline-tools
-            VERSION_DIR=$(ls -d */ | grep -v latest | head -n 1)
-            sudo ln -sfn $VERSION_DIR latest
-          fi
-          
           mkdir -p ~/.bubblewrap
           cat <<EOF > ~/.bubblewrap/config.json
           {
@@ -44,13 +40,6 @@ jobs:
           }
           EOF
 
-      - name: Accept Android SDK Licenses
-        run: yes | ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --licenses || true
-
-      - name: Generate Dummy Keystore
-        run: |
-          keytool -genkey -v -keystore debug.keystore -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 -storepass password123 -keypass password123 -dname "CN=Loki, O=Dev, C=US"
-
       - name: Ensure Valid Icon URL
         run: |
           if ! curl --output /dev/null --silent --head --fail "https://loki-x-prime.vercel.app/icon-512x512.png"; then
@@ -58,12 +47,15 @@ jobs:
             sed -i 's|https://loki-x-prime.vercel.app/icon-512x512.png|https://raw.githubusercontent.com/GoogleChromeLabs/bubblewrap/main/app/assets/logo512.png|g' twa-manifest.json
           fi
 
+      - name: Generate Dummy Keystore
+        run: |
+          keytool -genkey -v -keystore debug.keystore -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 -storepass password123 -keypass password123 -dname "CN=Loki, O=Dev, C=US"
+
       - name: Build TWA with Bubblewrap
         env:
           BUBBLEWRAP_KEYSTORE_PASSWORD: password123
           BUBBLEWRAP_KEY_PASSWORD: password123
-        run: |
-          bubblewrap build --skipVersionCheck
+        run: yes | bubblewrap build
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4

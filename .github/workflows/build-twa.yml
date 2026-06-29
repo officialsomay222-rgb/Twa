@@ -27,8 +27,25 @@ jobs:
       - name: Install Bubblewrap CLI
         run: npm install -g @bubblewrap/cli
 
-      - name: Setup Bubblewrap
-        run: yes | bubblewrap doctor
+      - name: Configure Bubblewrap
+        run: |
+          # Ensure cmdline-tools/latest exists for Bubblewrap validation
+          if [ ! -d "${ANDROID_HOME}/cmdline-tools/latest" ]; then
+            cd ${ANDROID_HOME}/cmdline-tools
+            VERSION_DIR=$(ls -d */ | grep -v latest | head -n 1)
+            sudo ln -sfn $VERSION_DIR latest
+          fi
+          
+          mkdir -p ~/.bubblewrap
+          cat <<EOF > ~/.bubblewrap/config.json
+          {
+            "jdkPath": "${JAVA_HOME}",
+            "androidSdkPath": "${ANDROID_HOME}"
+          }
+          EOF
+
+      - name: Accept Android SDK Licenses
+        run: yes | ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
       - name: Generate Dummy Keystore
         run: |
@@ -45,7 +62,8 @@ jobs:
         env:
           BUBBLEWRAP_KEYSTORE_PASSWORD: password123
           BUBBLEWRAP_KEY_PASSWORD: password123
-        run: yes | bubblewrap build
+        run: |
+          bubblewrap build --skipVersionCheck
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4

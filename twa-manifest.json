@@ -1,0 +1,32 @@
+{
+  "packageId": "com.lokixprime.app",
+  "host": "loki-x-prime.vercel.app",
+  "name": "Loki X Prime",
+  "shortName": "LokiXPrime",
+  "themeColor": "#000000",
+  "navigationColor": "#000000",
+  "navigationColorDark": "#000000",
+  "navigationDividerColor": "#000000",
+  "navigationDividerColorDark": "#000000",
+  "backgroundColor": "#000000",
+  "enableNotifications": false,
+  "startUrl": "/",
+  "iconUrl": "https://loki-x-prime.vercel.app/icon-512x512.png",
+  "maskableIconUrl": "https://loki-x-prime.vercel.app/icon-512x512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "./debug.keystore",
+    "alias": "androiddebugkey"
+  },
+  "appVersionCode": 1,
+  "appVersionName": "1.0.0",
+  "shortcuts": [],
+  "generatorApp": "bubblewrap-cli",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "display": "standalone",
+  "orientation": "portrait"
+}

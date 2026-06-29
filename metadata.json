@@ -1,0 +1,8 @@
+{
+  "name": "TWA Bubblewrap Setup",
+  "description": "Automated pipeline setup for wrapping a live chatbot into a Trusted Web Activity (TWA) using Google Chrome Labs Bubblewrap and GitHub Actions.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

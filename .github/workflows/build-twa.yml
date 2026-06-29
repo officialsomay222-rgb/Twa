@@ -24,6 +24,9 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Accept Android SDK Licenses
+        run: yes | ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --licenses || true
+
       - name: Install Bubblewrap CLI
         run: npm install -g @bubblewrap/cli
 
@@ -41,11 +44,20 @@ jobs:
           }
           EOF
 
+      - name: Ensure Valid Icon URL
+        run: |
+          if ! curl --output /dev/null --silent --head --fail "https://loki-x-prime.vercel.app/icon-512x512.png"; then
+            echo "Icon not found! Replacing with a working placeholder icon to prevent build crash."
+            sed -i 's|https://loki-x-prime.vercel.app/icon-512x512.png|https://raw.githubusercontent.com/GoogleChromeLabs/bubblewrap/main/app/assets/logo512.png|g' twa-manifest.json
+          fi
+
       - name: Build TWA with Bubblewrap
         env:
+          APP_PWD: password123
+          KEY_PWD: password123
           BUBBLEWRAP_KEYSTORE_PASSWORD: password123
           BUBBLEWRAP_KEY_PASSWORD: password123
-        run: yes | bubblewrap build
+        run: bubblewrap build
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4

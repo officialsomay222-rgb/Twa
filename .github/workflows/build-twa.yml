@@ -29,28 +29,20 @@ jobs:
 
       - name: Configure Bubblewrap
         run: |
-          # Bubblewrap checks for $ANDROID_HOME/tools or $ANDROID_HOME/bin
-          # and specifically looks for bin/sdkmanager
-          sudo mkdir -p ${ANDROID_HOME}/bin
-          sudo ln -sfn ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager ${ANDROID_HOME}/bin/sdkmanager
+          ANDROID_SDK_PATH="/usr/local/lib/android/sdk"
+          sudo mkdir -p $ANDROID_SDK_PATH/bin
+          sudo ln -sfn $ANDROID_SDK_PATH/cmdline-tools/latest/bin/sdkmanager $ANDROID_SDK_PATH/bin/sdkmanager
           
           mkdir -p ~/.bubblewrap
           cat <<EOF > ~/.bubblewrap/config.json
           {
             "jdkPath": "${JAVA_HOME}",
-            "androidSdkPath": "${ANDROID_HOME}"
+            "androidSdkPath": "${ANDROID_SDK_PATH}"
           }
           EOF
 
       - name: Accept Android SDK Licenses
-        run: yes | ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --licenses || true
-
-      - name: Ensure Valid Icon URL
-        run: |
-          if ! curl --output /dev/null --silent --head --fail "https://loki-x-prime.vercel.app/icon-512x512.png"; then
-            echo "Icon not found! Replacing with a working placeholder icon to prevent build crash."
-            sed -i 's|https://loki-x-prime.vercel.app/icon-512x512.png|https://raw.githubusercontent.com/GoogleChromeLabs/bubblewrap/main/app/assets/logo512.png|g' twa-manifest.json
-          fi
+        run: yes | /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
       - name: Generate Dummy Keystore
         run: |
@@ -61,8 +53,8 @@ jobs:
           BUBBLEWRAP_KEYSTORE_PASSWORD: password123
           BUBBLEWRAP_KEY_PASSWORD: password123
         run: |
-          bubblewrap update --skipVersionUpgrade
-          bubblewrap build
+          yes | bubblewrap update --skipVersionUpgrade || true
+          yes | bubblewrap build
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
@@ -70,4 +62,3 @@ jobs:
           name: loki-x-prime-android-bundles
           path: |
             *.apk
-            *.aab

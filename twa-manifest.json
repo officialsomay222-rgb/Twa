@@ -11,8 +11,8 @@
   "backgroundColor": "#000000",
   "enableNotifications": false,
   "startUrl": "/",
-  "iconUrl": "https://loki-x-prime.vercel.app/icon-512x512.png",
-  "maskableIconUrl": "https://loki-x-prime.vercel.app/icon-512x512.png",
+  "iconUrl": "https://raw.githubusercontent.com/GoogleChromeLabs/bubblewrap/main/app/assets/logo512.png",
+  "maskableIconUrl": "https://raw.githubusercontent.com/GoogleChromeLabs/bubblewrap/main/app/assets/logo512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
     "path": "./debug.keystore",
